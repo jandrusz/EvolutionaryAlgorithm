@@ -12,5 +12,4 @@ public class FileDTO {
 	private List<LinkDTO> links;
 	private Integer numberOfDemands;
 	private List<DemandDTO> demands;
-
 }

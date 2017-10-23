@@ -8,10 +8,10 @@ import lombok.Setter;
 @Setter
 public class DemandDTO {
 
+	private Integer demandNumber;
 	private Integer startNode;
 	private Integer endNode;
-	private Integer demandVolume;
+	private Integer demandVolume; //h(d)
 	private Integer numberOfPaths;
 	private List<PathDTO> paths;
-
 }

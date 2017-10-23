@@ -1,123 +1,120 @@
 package com.pstkm;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.stream.Collectors;
 import com.google.common.collect.Lists;
 import com.pstkm.dtos.DemandDTO;
 import com.pstkm.dtos.FileDTO;
 import com.pstkm.dtos.LinkDTO;
 import com.pstkm.dtos.PathDTO;
 
-@Getter
-@Setter
-public class FileReader {
+class FileReader {
 
 	private static final String END_OF_LINKS_BLOCK_SIGN = "-1";
+	private FileDTO fileDTO = new FileDTO();
+	private List<String> file;
+	private Integer numberOfDemands = 0;
 
-	private static FileDTO fileDTO = new FileDTO();
-
-	private static List<String> file;
-
-	public static void readFile(List<String> fileLines) {
+	FileDTO readFilePipeline(List<String> fileLines) {
 		file = fileLines;
-		fileDTO.setNumberOfLinks(Integer.valueOf(file.remove(0)));
+		file.add("");
+		fileDTO.setNumberOfLinks(Integer.valueOf(getAndRemoveFirstLineOfFile()));
 		fileDTO.setLinks(getAllLinks());
 		fileDTO.setNumberOfDemands(getNumberOfDemands());
-		file.remove(0);
+		getAndRemoveFirstLineOfFile();
 		fileDTO.setDemands(getAllDemands());
-		getFileDTO();
+		return fileDTO;
 	}
 
-	private static List<LinkDTO> getAllLinks() {
+	private List<LinkDTO> getAllLinks() {
 		List<LinkDTO> links = Lists.newArrayList();
 		for (int i = 0; ; i++) {
 			if (Objects.equals(file.get(0), END_OF_LINKS_BLOCK_SIGN)) {
-				file.remove(0);
+				getAndRemoveFirstLineOfFile();
 				break;
 			}
-			links.add(getLink(file.remove(0)));
+			links.add(getLink(getAndRemoveFirstLineOfFile()));
 		}
 		return links;
 	}
 
-	private static List<DemandDTO> getAllDemands() {
+	private List<DemandDTO> getAllDemands() {
 		List<DemandDTO> demands = Lists.newArrayList();
 		for (int i = 0; i < fileDTO.getNumberOfDemands(); i++) {
 			demands.add(getDemand(getDemandBlock()));
 		}
-
 		return demands;
 	}
 
-	private static List<String> getDemandBlock() {
+	private List<String> getDemandBlock() {
 		List<String> demandBlock = Lists.newArrayList();
-		for (int i = 0; ; i++) {
+		while (true) {
 			if (Objects.equals(file.get(0), "")) {
-				file.remove(0);
+				getAndRemoveFirstLineOfFile();
 				break;
 			}
-			demandBlock.add(file.remove(0));
+			demandBlock.add(getAndRemoveFirstLineOfFile());
 		}
 		return demandBlock;
 	}
 
-	private static DemandDTO getDemand(List<String> demandBlock) {
+	private DemandDTO getDemand(List<String> demandBlock) {
 		DemandDTO demandDTO = new DemandDTO();
-		List<PathDTO> paths = Lists.newArrayList();
 		if (!demandBlock.isEmpty()) {
-			String[] splited = demandBlock.get(0).split("\\s+");
-			demandDTO.setStartNode(Integer.valueOf(splited[0]));
-			demandDTO.setEndNode(Integer.valueOf(splited[1]));
-			demandDTO.setDemandVolume(Integer.valueOf(splited[2]));
-			splited = demandBlock.get(1).split("\\s+");
-			demandDTO.setNumberOfPaths(Integer.valueOf(splited[0]));
-
-			for (int i = 0; i < demandDTO.getNumberOfPaths(); i++) {
-				splited = demandBlock.get(2 + i).split("\\s+");
-				PathDTO pathDTO = new PathDTO();
-				pathDTO.setPathNumber(Integer.valueOf(splited[0]));
-				pathDTO.setEdges(getEdges(splited));
-				paths.add(pathDTO);
-			}
+			String[] splitted = demandBlock.get(0).split("\\s+");
+			demandDTO.setStartNode(Integer.valueOf(splitted[0]));
+			demandDTO.setEndNode(Integer.valueOf(splitted[1]));
+			demandDTO.setDemandVolume(Integer.valueOf(splitted[2]));
+			splitted = demandBlock.get(1).split("\\s+");
+			demandDTO.setNumberOfPaths(Integer.valueOf(splitted[0]));
+			demandDTO.setPaths(getPaths(demandDTO, demandBlock));
+			demandDTO.setDemandNumber(++numberOfDemands);
 		}
-		demandDTO.setPaths(paths);
 		return demandDTO;
 	}
 
-	private static List<Integer> getEdges(String[] edges) {
-		List<Integer> list = Lists.newArrayList();
-		for (String s : edges) {
-			list.add(Integer.valueOf(s));
+	private List<PathDTO> getPaths(DemandDTO demandDTO, List<String> demandBlock) {
+		List<PathDTO> paths = Lists.newArrayList();
+		for (int i = 0; i < demandDTO.getNumberOfPaths(); i++) {
+			String[] splitted = demandBlock.get(2 + i).split("\\s+");
+			PathDTO pathDTO = new PathDTO();
+			pathDTO.setPathNumber(Integer.valueOf(splitted[0]));
+			pathDTO.setEdges(getEdges(splitted));
+			paths.add(pathDTO);
 		}
-		list.remove(0);
-		return list;
+		return paths;
 	}
 
-	private static LinkDTO getLink(String link) {
-		LinkDTO linkDTO = new LinkDTO();
-		String[] splited = link.split("\\s+");
-		linkDTO.setStartNode(Integer.valueOf(splited[0]));
-		linkDTO.setEndNode(Integer.valueOf(splited[1]));
-		linkDTO.setNumberOfFibrePairsInCable(Integer.valueOf(splited[2]));
-		linkDTO.setFibrePairCost(Float.valueOf(splited[3]));
-		linkDTO.setNumberOfLambdasInFibre(Integer.valueOf(splited[4]));
-		return linkDTO;
+	private List<Integer> getEdges(String[] edges) {
+		return Arrays.stream(edges)
+				.skip(1)
+				.map(Integer::valueOf)
+				.collect(Collectors.toList());
 	}
 
+	private LinkDTO getLink(String link) {
+		String[] splitted = link.split("\\s+");
+		return LinkDTO.builder()
+				.startNode(Integer.valueOf(splitted[0]))
+				.endNode(Integer.valueOf(splitted[1]))
+				.numberOfFibrePairsInCable(Integer.valueOf(splitted[2]))
+				.fibrePairCost(Float.valueOf(splitted[3]))
+				.numberOfLambdasInFibre(Integer.valueOf(splitted[4]))
+				.build();
+	}
 
-	private static Integer getNumberOfDemands() {
-
-		for (int i = 0; ; i++) {
+	private Integer getNumberOfDemands() {
+		while (true) {
 			if (!Objects.equals(file.get(0), "")) {
-				return Integer.valueOf(file.remove(0));
+				return Integer.valueOf(getAndRemoveFirstLineOfFile());
 			}
-			file.remove(0);
+			getAndRemoveFirstLineOfFile();
 		}
 	}
 
-	public static FileDTO getFileDTO() {
-		return fileDTO;
+	private String getAndRemoveFirstLineOfFile(){
+		return file.remove(0);
 	}
 }

@@ -1,16 +1,13 @@
 package com.pstkm.dtos;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Builder;
 
-@Getter
-@Setter
+@Builder
 public class LinkDTO {
 
 	private Integer startNode;
 	private Integer endNode;
 	private Integer numberOfFibrePairsInCable;
 	private Float fibrePairCost;
-	private Integer NumberOfLambdasInFibre;
-
+	private Integer numberOfLambdasInFibre;
 }
