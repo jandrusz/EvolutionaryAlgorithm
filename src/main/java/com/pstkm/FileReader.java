@@ -18,6 +18,7 @@ class FileReader {
 	private Integer numberOfDemands = 0;
 
 	FileDTO readFilePipeline(List<String> fileLines) {
+		numberOfDemands = 0;
 		file = fileLines;
 		file.add("");
 		fileDTO.setNumberOfLinks(Integer.valueOf(getAndRemoveFirstLineOfFile()));
@@ -70,7 +71,7 @@ class FileReader {
 			splitted = demandBlock.get(1).split("\\s+");
 			demandDTO.setNumberOfPaths(Integer.valueOf(splitted[0]));
 			demandDTO.setPaths(getPaths(demandDTO, demandBlock));
-			demandDTO.setDemandNumber(++numberOfDemands);
+			demandDTO.setDemandId(++numberOfDemands);
 		}
 		return demandDTO;
 	}
@@ -80,7 +81,7 @@ class FileReader {
 		for (int i = 0; i < demandDTO.getNumberOfPaths(); i++) {
 			String[] splitted = demandBlock.get(2 + i).split("\\s+");
 			PathDTO pathDTO = new PathDTO();
-			pathDTO.setPathNumber(Integer.valueOf(splitted[0]));
+			pathDTO.setPathId(i+1);
 			pathDTO.setEdges(getEdges(splitted));
 			paths.add(pathDTO);
 		}

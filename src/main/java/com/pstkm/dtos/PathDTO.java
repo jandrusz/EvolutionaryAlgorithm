@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 public class PathDTO {
 
-	private Integer pathNumber;
+	private Integer pathId;
 	private List<Integer> edges;
 }

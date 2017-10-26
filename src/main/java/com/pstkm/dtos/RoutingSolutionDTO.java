@@ -1,16 +1,18 @@
 package com.pstkm.dtos;
 
-import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
-public class RoutingSolutionDTO {
+@NoArgsConstructor
+public class RoutingSolutionDTO { //TODO find better name
 
-	private Map<PointDTO, Integer> map;
-	private List<Integer> demandsVolumes;
+	private Map<PointDTO, Integer> mapOfValues;
+
 }
+

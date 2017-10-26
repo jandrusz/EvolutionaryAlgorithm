@@ -6,12 +6,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Objects;
+import java.util.List;
 import javax.swing.*;
 import lombok.Getter;
 import com.pstkm.bruteForce.BruteForce;
-import com.pstkm.dtos.RoutingSolutionDTO;
 import com.pstkm.dtos.FileDTO;
+import com.pstkm.dtos.RoutingSolutionDTO;
 
 @Getter
 class MainWindow {
@@ -27,6 +27,11 @@ class MainWindow {
 		frame = new JFrame();
 		fileReader = new FileReader();
 		buildMainFrame();
+		try { // temporary
+			importAndLoadFile();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	private void buildMainFrame() {
@@ -99,22 +104,24 @@ class MainWindow {
 	private void setListenerForBruteForceButton(JButton button) {
 		button.addActionListener(e -> {
 			BruteForce bruteForce = new BruteForce();
-			RoutingSolutionDTO solution = bruteForce.produceRoutingSolution(file);
+			List<List<RoutingSolutionDTO>> combinations = bruteForce.getAllCombinations(file);
+			List<RoutingSolutionDTO> fullSolutions = bruteForce.getAllRoutingSolutions(combinations);
 		});
 	}
 
 	private void setListenerForEvolutionaryAlgorithmButton(JButton button) {
 		button.addActionListener(e -> {
-			//TODO
+			//TODO in next part of project
 		});
 	}
 
 	private void importAndLoadFile() throws IOException {
-		fileDialog = new FileDialog(frame, "Choose file", FileDialog.LOAD);
-		fileDialog.setVisible(true);
-		if (Objects.nonNull(fileDialog.getFile())) {
-			path = Paths.get(fileDialog.getDirectory() + fileDialog.getFile());
+//		fileDialog = new FileDialog(frame, "Choose file", FileDialog.LOAD);
+//		fileDialog.setVisible(true);
+//		if (Objects.nonNull(fileDialog.getFile())) {
+//			path = Paths.get(fileDialog.getDirectory() + fileDialog.getFile());
+			path = Paths.get("C:\\Users\\Jakub\\Desktop\\net4.txt"); //temporary for faster debug
 			file = fileReader.readFilePipeline(Files.readAllLines(path, StandardCharsets.UTF_8));
-		}
+//		}
 	}
 }

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class DemandDTO {
 
-	private Integer demandNumber;
+	private Integer demandId;
 	private Integer startNode;
 	private Integer endNode;
 	private Integer demandVolume; //h(d)

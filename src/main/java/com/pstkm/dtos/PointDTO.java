@@ -9,6 +9,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PointDTO {
 
-	private Integer demandNumber;
-	private Integer pathNumber;
+	private Integer demandId;
+	private Integer pathId;
 }
