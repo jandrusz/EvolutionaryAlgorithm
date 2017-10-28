@@ -1,12 +1,20 @@
 package com.pstkm;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.FileDialog;
+import java.awt.Font;
+import java.awt.SystemColor;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import javax.swing.*;
+import java.util.List;
+import java.util.Objects;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.WindowConstants;
 import lombok.Getter;
 import com.pstkm.algorithms.BruteForce;
 import com.pstkm.dtos.FileDTO;
@@ -26,11 +34,6 @@ class MainWindow {
 		frame = new JFrame();
 		fileReader = new FileReader();
 		buildMainFrame();
-		try { // temporary
-			importAndLoadFile();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
 	}
 
 	private void buildMainFrame() {
@@ -102,8 +105,13 @@ class MainWindow {
 
 	private void setListenerForBruteForceButton(JButton button) {
 		button.addActionListener(e -> {
-			BruteForce bruteForce = new BruteForce();
-			RoutingSolutionDTO routingSolutionDTO = bruteForce.computeDDAP(file);
+			BruteForce bruteForce = new BruteForce(file);
+			List<RoutingSolutionDTO> allAcceptableRoutingSolutions = bruteForce.getAllAcceptableRoutingSolutions();
+			List<java.util.List<Integer>> costs = bruteForce.computeCostsOfAllRoutingSolutions(allAcceptableRoutingSolutions);
+			RoutingSolutionDTO routingSolutionDDAP = bruteForce.computeDDAP(allAcceptableRoutingSolutions, costs);
+			System.out.println("DDAP RESULT:\n" + routingSolutionDDAP.toString());
+			RoutingSolutionDTO routingSolutionDAP = bruteForce.computeDAP(allAcceptableRoutingSolutions, costs);
+			System.out.println("DAP RESULT:\n" + routingSolutionDAP.toString());
 		});
 	}
 
@@ -114,12 +122,11 @@ class MainWindow {
 	}
 
 	private void importAndLoadFile() throws IOException {
-//		fileDialog = new FileDialog(frame, "Choose file", FileDialog.LOAD);
-//		fileDialog.setVisible(true);
-//		if (Objects.nonNull(fileDialog.getFile())) {
-//			path = Paths.get(fileDialog.getDirectory() + fileDialog.getFile());
-			path = Paths.get("C:\\Users\\Jakub\\Desktop\\net4.txt"); //temporary for faster debug
+		fileDialog = new FileDialog(frame, "Choose file", FileDialog.LOAD);
+		fileDialog.setVisible(true);
+		if (Objects.nonNull(fileDialog.getFile())) {
+			path = Paths.get(fileDialog.getDirectory() + fileDialog.getFile());
 			file = fileReader.readFilePipeline(Files.readAllLines(path, StandardCharsets.UTF_8));
-//		}
+		}
 	}
 }

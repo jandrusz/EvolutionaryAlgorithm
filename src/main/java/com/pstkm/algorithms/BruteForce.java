@@ -18,6 +18,10 @@ public class BruteForce {
 
 	private FileDTO file;
 
+	public BruteForce(FileDTO fileDTO) {
+		setFile(fileDTO);
+	}
+
 	private List<List<RoutingSolutionDTO>> getAllCombinations() {
 		Map<PointDTO, Integer> mapOfValuesForOneDemand = Maps.newHashMap();
 		List<List<RoutingSolutionDTO>> outerList = Lists.newArrayList();
@@ -52,7 +56,8 @@ public class BruteForce {
 		return combinationOfIndexes;
 	}
 
-	private List<RoutingSolutionDTO> getAllAcceptableRoutingSolutions(List<List<RoutingSolutionDTO>> combinations) {
+	public List<RoutingSolutionDTO> getAllAcceptableRoutingSolutions() {
+		List<List<RoutingSolutionDTO>> combinations = getAllCombinations();
 		List<List<Integer>> combinationOfIndexes = Lists.cartesianProduct(getCombinationsOfIndexes(combinations)); //TODO doesn't work for net12_1 because of result size bigger than Integer.MAX_VALUE
 
 		List<RoutingSolutionDTO> listOfRoutingSolutions = Lists.newArrayList();
@@ -67,7 +72,7 @@ public class BruteForce {
 		return listOfRoutingSolutions;
 	}
 
-	private List<List<Integer>> computeCostsOfAllRoutingSolutions(List<RoutingSolutionDTO> listOfRoutingSolutions) {
+	public List<List<Integer>> computeCostsOfAllRoutingSolutions(List<RoutingSolutionDTO> listOfRoutingSolutions) {
 		return listOfRoutingSolutions.stream()
 				.map(this::computeCostOfOneRoutingSolution)
 				.collect(Collectors.toList());
@@ -93,11 +98,7 @@ public class BruteForce {
 		return cost;
 	}
 
-	public RoutingSolutionDTO computeDDAP(FileDTO fileDTO) {
-		setFile(fileDTO);
-		List<RoutingSolutionDTO> allAcceptableRoutingSolutions = getAllAcceptableRoutingSolutions(getAllCombinations());
-		List<List<Integer>> costs = computeCostsOfAllRoutingSolutions(allAcceptableRoutingSolutions);
-
+	public RoutingSolutionDTO computeDDAP(List<RoutingSolutionDTO> allAcceptableRoutingSolutions, List<List<Integer>> costs) {
 		Float finalCost = Float.MAX_VALUE;
 		Float cost = 0F;
 		Integer indexOfBestRoutingSolution = 0;
@@ -113,6 +114,19 @@ public class BruteForce {
 			cost = 0F;
 		}
 		return allAcceptableRoutingSolutions.get(indexOfBestRoutingSolution);
+	}
+
+	public RoutingSolutionDTO computeDAP(List<RoutingSolutionDTO> allAcceptableRoutingSolutions, List<List<Integer>> costs) {
+		double max = Double.MIN_VALUE;
+		for (int i = 0; i < costs.size(); i++) {
+			for (int j = 0; j < costs.get(i).size(); j++) {
+				max = Math.max(0, costs.get(i).get(j) - 1);
+			}
+			if (max == 0) {
+				return allAcceptableRoutingSolutions.get(i);
+			}
+		}
+		return null;
 	}
 
 	private List<List<Integer>> getCombinations(Integer sum, Integer numberOfElements) {
