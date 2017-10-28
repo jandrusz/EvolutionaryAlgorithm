@@ -6,10 +6,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import javax.swing.*;
 import lombok.Getter;
-import com.pstkm.bruteForce.BruteForce;
+import com.pstkm.algorithms.BruteForce;
 import com.pstkm.dtos.FileDTO;
 import com.pstkm.dtos.RoutingSolutionDTO;
 
@@ -104,8 +103,7 @@ class MainWindow {
 	private void setListenerForBruteForceButton(JButton button) {
 		button.addActionListener(e -> {
 			BruteForce bruteForce = new BruteForce();
-			List<List<RoutingSolutionDTO>> combinations = bruteForce.getAllCombinations(file);
-			List<RoutingSolutionDTO> fullSolutions = bruteForce.getAllRoutingSolutions(combinations);
+			RoutingSolutionDTO routingSolutionDTO = bruteForce.computeDDAP(file);
 		});
 	}
 

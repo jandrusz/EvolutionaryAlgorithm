@@ -2,6 +2,7 @@ package com.pstkm.dtos;
 
 import java.util.Map;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,9 +11,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 public class RoutingSolutionDTO { //TODO find better name
 
 	private Map<PointDTO, Integer> mapOfValues;
-
 }
 

@@ -70,8 +70,8 @@ class FileReader {
 			demandDTO.setDemandVolume(Integer.valueOf(splitted[2]));
 			splitted = demandBlock.get(1).split("\\s+");
 			demandDTO.setNumberOfPaths(Integer.valueOf(splitted[0]));
-			demandDTO.setPaths(getPaths(demandDTO, demandBlock));
 			demandDTO.setDemandId(++numberOfDemands);
+			demandDTO.setPaths(getPaths(demandDTO, demandBlock));
 		}
 		return demandDTO;
 	}
@@ -83,6 +83,7 @@ class FileReader {
 			PathDTO pathDTO = new PathDTO();
 			pathDTO.setPathId(i+1);
 			pathDTO.setEdges(getEdges(splitted));
+			pathDTO.setDemandId(demandDTO.getDemandId());
 			paths.add(pathDTO);
 		}
 		return paths;
