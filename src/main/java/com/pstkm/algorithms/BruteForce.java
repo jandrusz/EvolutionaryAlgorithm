@@ -120,7 +120,7 @@ public class BruteForce {
 		double max = Double.MIN_VALUE;
 		for (int i = 0; i < costs.size(); i++) {
 			for (int j = 0; j < costs.get(i).size(); j++) {
-				max = Math.max(0, costs.get(i).get(j) - 1);
+				max = Math.max(0, costs.get(i).get(j) - file.getLinks().get(j).getNumberOfFibrePairsInCable());
 			}
 			if (max == 0) {
 				return allAcceptableRoutingSolutions.get(i);
