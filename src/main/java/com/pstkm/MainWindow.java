@@ -107,7 +107,7 @@ class MainWindow {
 		button.addActionListener(e -> {
 			BruteForce bruteForce = new BruteForce(file);
 			List<RoutingSolutionDTO> allAcceptableRoutingSolutions = bruteForce.getAllAcceptableRoutingSolutions();
-			List<java.util.List<Integer>> costs = bruteForce.computeCostsOfAllRoutingSolutions(allAcceptableRoutingSolutions);
+			List<List<Integer>> costs = bruteForce.computeCostsOfAllRoutingSolutions(allAcceptableRoutingSolutions);
 			RoutingSolutionDTO routingSolutionDDAP = bruteForce.computeDDAP(allAcceptableRoutingSolutions, costs);
 			System.out.println("DDAP RESULT:\n" + routingSolutionDDAP.toString());
 			RoutingSolutionDTO routingSolutionDAP = bruteForce.computeDAP(allAcceptableRoutingSolutions, costs);

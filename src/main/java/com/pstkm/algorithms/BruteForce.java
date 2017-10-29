@@ -87,13 +87,13 @@ public class BruteForce {
 		}
 
 		for (int j = 0; j < file.getNumberOfLinks(); j++) {
-			Integer sum = 0;
+			double sum = 0;
 			for (PathDTO path : paths) {
 				if (path.getEdges().contains(j + 1)) {
 					sum += routingSolutionDTO.getMapOfValues().get(new PointDTO(path.getDemandId(), path.getPathId()));
 				}
 			}
-			cost.set(j, (int) Math.ceil(sum / file.getLinks().get(j).getNumberOfLambdasInFibre()));
+			cost.set(j, (int) Math.ceil(sum / (double) file.getLinks().get(j).getNumberOfLambdasInFibre()));
 		}
 		return cost;
 	}
@@ -113,6 +113,7 @@ public class BruteForce {
 			}
 			cost = 0F;
 		}
+		System.out.println("DDAP minimum cost: " + finalCost);
 		return allAcceptableRoutingSolutions.get(indexOfBestRoutingSolution);
 	}
 
