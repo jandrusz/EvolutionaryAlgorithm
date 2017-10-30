@@ -23,53 +23,58 @@ public class BruteForce {
 	}
 
 	private List<List<RoutingSolutionDTO>> getAllCombinations() {
-		Map<PointDTO, Integer> mapOfValuesForOneDemand = Maps.newHashMap();
-		List<List<RoutingSolutionDTO>> outerList = Lists.newArrayList();
-		List<RoutingSolutionDTO> innerList = Lists.newArrayList();
-
-		for (DemandDTO demand : file.getDemands()) {
-			Integer numberOfCombinations = Utils.newtonSymbol(demand.getNumberOfPaths() + demand.getDemandVolume() - 1, demand.getDemandVolume());
-			Integer demandId = demand.getDemandId();
-			for (int i = 0; i < numberOfCombinations; i++) {
-				for (int j = 0; j < demand.getNumberOfPaths(); j++) {
-					Integer pathId = demand.getPaths().get(j).getPathId();
-					mapOfValuesForOneDemand.put(new PointDTO(demandId, pathId), getCombinations(demand.getDemandVolume(), demand.getNumberOfPaths()).get(i).get(pathId - 1));
-				}
-				innerList.add(new RoutingSolutionDTO(mapOfValuesForOneDemand));
-				mapOfValuesForOneDemand = Maps.newHashMap();
-			}
-			outerList.add(innerList);
-			innerList = Lists.newArrayList();
-		}
-		return outerList;
+		return file.getDemands().stream()
+				.map(this::getCombinationsOfOneDemand)
+				.collect(Collectors.toList());
 	}
 
-	private List<List<Integer>> getCombinationsOfIndexes(List<List<RoutingSolutionDTO>> combinations) {
-		List<List<Integer>> combinationOfIndexes = Lists.newArrayList();
-		for (List<RoutingSolutionDTO> combination : combinations) {
-			List<Integer> oneCombination = Lists.newArrayList();
-			for (int j = 0; j < combination.size(); j++) {
-				oneCombination.add(j);
-			}
-			combinationOfIndexes.add(oneCombination);
+	private List<RoutingSolutionDTO> getCombinationsOfOneDemand(DemandDTO demand) {
+		List<RoutingSolutionDTO> list = Lists.newArrayList();
+		Integer numberOfCombinations = Utils.newtonSymbol(demand.getNumberOfPaths() + demand.getDemandVolume() - 1, demand.getDemandVolume());
+		for (int i = 0; i < numberOfCombinations; i++) {
+			list.add(getMapOfValuesForOneDemand(demand, i));
 		}
-		return combinationOfIndexes;
+		return list;
+	}
+
+	private RoutingSolutionDTO getMapOfValuesForOneDemand(DemandDTO demand, Integer combinationIndex) {
+		Map<PointDTO, Integer> mapOfValuesForOneDemand = Maps.newHashMap();
+		for (int j = 0; j < demand.getNumberOfPaths(); j++) {
+			Integer pathId = demand.getPaths().get(j).getPathId();
+			mapOfValuesForOneDemand.put(new PointDTO(demand.getDemandId(), pathId), getCombinations(demand.getDemandVolume(), demand.getNumberOfPaths()).get(combinationIndex).get(pathId - 1));
+		}
+		return new RoutingSolutionDTO(mapOfValuesForOneDemand);
+	}
+
+	private List<List<Integer>> fillListsWithIndexes(List<List<RoutingSolutionDTO>> combinations) {
+		return combinations.stream()
+				.map(combination -> fillOneListWithSuccessiveIndexes(combination.size()))
+				.collect(Collectors.toList());
+	}
+
+	private List<Integer> fillOneListWithSuccessiveIndexes(Integer size) {
+		List<Integer> oneCombination = Lists.newArrayList();
+		for (int j = 0; j < size; j++) {
+			oneCombination.add(j);
+		}
+		return oneCombination;
 	}
 
 	public List<RoutingSolutionDTO> getAllAcceptableRoutingSolutions() {
-		List<List<RoutingSolutionDTO>> combinations = getAllCombinations();
-		List<List<Integer>> combinationOfIndexes = Lists.cartesianProduct(getCombinationsOfIndexes(combinations)); //TODO doesn't work for net12_1 because of result size bigger than Integer.MAX_VALUE
+		List<List<RoutingSolutionDTO>> allCombinations = getAllCombinations();
+		List<List<Integer>> combinationOfIndexes = Lists.cartesianProduct(fillListsWithIndexes(allCombinations));
 
-		List<RoutingSolutionDTO> listOfRoutingSolutions = Lists.newArrayList();
+		return combinationOfIndexes.stream()
+				.map(indexes -> getOneAcceptableRoutingSolution(allCombinations, indexes))
+				.collect(Collectors.toList());
+	}
 
-		for (List<Integer> indexes : combinationOfIndexes) {
-			RoutingSolutionDTO routingSolutionDTO = new RoutingSolutionDTO(Maps.newHashMap());
-			for (int j = 0; j < combinations.size(); j++) {
-				routingSolutionDTO.getMapOfValues().putAll(combinations.get(j).get(indexes.get(j)).getMapOfValues());
-			}
-			listOfRoutingSolutions.add(routingSolutionDTO);
+	private RoutingSolutionDTO getOneAcceptableRoutingSolution(List<List<RoutingSolutionDTO>> combinations, List<Integer> indexes) {
+		RoutingSolutionDTO routingSolutionDTO = new RoutingSolutionDTO(Maps.newHashMap());
+		for (int i = 0; i < combinations.size(); i++) {
+			routingSolutionDTO.getMapOfValues().putAll(combinations.get(i).get(indexes.get(i)).getMapOfValues());
 		}
-		return listOfRoutingSolutions;
+		return routingSolutionDTO;
 	}
 
 	public List<List<Integer>> computeCostsOfAllRoutingSolutions(List<RoutingSolutionDTO> listOfRoutingSolutions) {
