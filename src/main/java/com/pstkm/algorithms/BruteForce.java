@@ -3,6 +3,8 @@ package com.pstkm.algorithms;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import lombok.Getter;
 import lombok.Setter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -14,6 +16,7 @@ import com.pstkm.dtos.RoutingSolutionDTO;
 import com.pstkm.util.Utils;
 
 @Setter
+@Getter
 public class BruteForce {
 
 	private FileDTO file;

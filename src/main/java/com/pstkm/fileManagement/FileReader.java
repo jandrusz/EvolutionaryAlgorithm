@@ -1,4 +1,4 @@
-package com.pstkm;
+package com.pstkm.fileManagement;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,14 +10,14 @@ import com.pstkm.dtos.FileDTO;
 import com.pstkm.dtos.LinkDTO;
 import com.pstkm.dtos.PathDTO;
 
-class FileReader {
+public class FileReader {
 
 	private static final String END_OF_LINKS_BLOCK_SIGN = "-1";
 	private FileDTO fileDTO = new FileDTO();
 	private List<String> file;
 	private Integer numberOfDemands = 0;
 
-	FileDTO readFilePipeline(List<String> fileLines) {
+	public FileDTO readFilePipeline(List<String> fileLines) {
 		numberOfDemands = 0;
 		file = fileLines;
 		file.add("");
