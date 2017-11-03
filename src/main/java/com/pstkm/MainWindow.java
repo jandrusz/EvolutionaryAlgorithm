@@ -1,7 +1,7 @@
 package com.pstkm;
 
 import com.pstkm.algorithms.BruteForce;
-import com.pstkm.algorithms.EvolutionaryAlgorithm;
+import com.pstkm.algorithms.Evolutionary;
 import com.pstkm.dtos.FileDTO;
 import com.pstkm.dtos.RoutingSolutionDTO;
 import com.pstkm.fileManagement.FileReader;
@@ -76,6 +76,7 @@ class MainWindow {
 	private JTextField getChromosomesNumberTextFields(){
 		chromosomesNumberTextField = new JTextField();
         chromosomesNumberTextField.setBounds(240, 160, 120, 20);
+        chromosomesNumberTextField.setText("10000");
 		return chromosomesNumberTextField;
 	}
 
@@ -143,6 +144,7 @@ class MainWindow {
     private JTextField getNumberOfGenerationsTextField(){
         numberOfGenerationsTextField = new JTextField();
         numberOfGenerationsTextField.setBounds(240, 260, 120, 20);
+        numberOfGenerationsTextField.setText("20");
         return numberOfGenerationsTextField;
     }
 
@@ -169,6 +171,7 @@ class MainWindow {
     private JTextField getSeedTextField(){
         seedTextField = new JTextField();
         seedTextField.setBounds(240, 320, 120, 20);
+        seedTextField.setText("123");
         return seedTextField;
     }
 
@@ -234,19 +237,24 @@ class MainWindow {
 	private void setListenerForBruteForceButton(JButton button) {
 		button.addActionListener(e -> {
 			BruteForce bruteForce = new BruteForce(file);
-			List<RoutingSolutionDTO> allAcceptableRoutingSolutions = bruteForce.getAllAcceptableRoutingSolutions();
-			List<List<Integer>> costs = bruteForce.computeCostsOfAllRoutingSolutions(allAcceptableRoutingSolutions);
-			RoutingSolutionDTO routingSolutionDDAP = bruteForce.computeDDAP(allAcceptableRoutingSolutions, costs);
+			List<RoutingSolutionDTO> allAcceptableRoutingSolutions = bruteForce.getAllAcceptableRoutingSolutionsWithCosts();
+
+			RoutingSolutionDTO routingSolutionDDAP = bruteForce.computeDDAP(allAcceptableRoutingSolutions);
 			System.out.println("DDAP RESULT:\n" + routingSolutionDDAP.toString());
-			new FileWriter().writeFile("output", routingSolutionDDAP, bruteForce.getFile());
-			RoutingSolutionDTO routingSolutionDAP = bruteForce.computeDAP(allAcceptableRoutingSolutions, costs);
+			new FileWriter().writeFile("outputBF", routingSolutionDDAP, bruteForce.getFile());
+
+			RoutingSolutionDTO routingSolutionDAP = bruteForce.computeDAP(allAcceptableRoutingSolutions);
 			System.out.println("DAP RESULT:\n" + routingSolutionDAP.toString());
 		});
 	}
 
 	private void setListenerForEvolutionaryAlgorithmButton(JButton button) {
 		button.addActionListener(e -> {
-			EvolutionaryAlgorithm evolutionaryAlgorithm = new EvolutionaryAlgorithm();
+			Evolutionary evolutionaryAlgorithm = new Evolutionary(file);
+			List<RoutingSolutionDTO> allAcceptableRoutingSolutions = evolutionaryAlgorithm.getAllAcceptableRoutingSolutionsWithCosts(Integer.valueOf(chromosomesNumberTextField.getText()), Long.valueOf(seedTextField.getText()));
+			RoutingSolutionDTO routingSolutionDDAP = evolutionaryAlgorithm.computeDDAP(allAcceptableRoutingSolutions, Integer.valueOf(numberOfGenerationsTextField.getText()));
+			System.out.println("DDAP RESULT:\n" + routingSolutionDDAP.toString());
+			new FileWriter().writeFile("outputEA", routingSolutionDDAP, evolutionaryAlgorithm.getFile());
 		});
 	}
 

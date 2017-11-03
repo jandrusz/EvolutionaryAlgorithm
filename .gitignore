@@ -1,4 +1,5 @@
 .idea
 target
 EvolutionaryAlgorithm.iml
-output.txt
+outputBF.txt
+outputEA.txt
