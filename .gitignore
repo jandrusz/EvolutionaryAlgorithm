@@ -1,5 +1,7 @@
 .idea
 target
 EvolutionaryAlgorithm.iml
-outputBF.txt
-outputEA.txt
+output_BF_DDAP.txt
+output_BF_DAP.txt
+output_EA_DDAP.txt
+output_EA_DAP.txt

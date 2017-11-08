@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Getter
-class MainWindow {
+public class MainWindow {
 
 	private JFrame frame;
 	private FileReader fileReader;
@@ -27,7 +27,7 @@ class MainWindow {
 	private JLabel label;
 	private Path path;
 	private FileDTO file;
-	private JTextArea textArea;
+	public static JTextArea textArea;
 	private JTextField chromosomesNumberTextField;
 	private JTextField mutationProbabilityTextField;
 	private JTextField crossoverProbabilityTextField;
@@ -55,6 +55,7 @@ class MainWindow {
 		frame.add(getCrossoverProbabilityLabel());
 		frame.add(getCrossoverProbabilityTextField());
 		frame.add(getEvolutionaryAlgorithmLogTextArea());
+		frame.add(getScroll());
 		frame.add(getStopCriteriaLabel());
 		frame.add(getMaxTimeLabel());
 		frame.add(getMaxTimeTextField());
@@ -76,7 +77,7 @@ class MainWindow {
 	private JTextField getChromosomesNumberTextFields(){
 		chromosomesNumberTextField = new JTextField();
         chromosomesNumberTextField.setBounds(240, 160, 120, 20);
-        chromosomesNumberTextField.setText("10000");
+        chromosomesNumberTextField.setText("5000");
 		return chromosomesNumberTextField;
 	}
 
@@ -111,7 +112,14 @@ class MainWindow {
 		textArea.setBounds(400, 20, 380, 360);
 		textArea.setEnabled(false);
 		textArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		textArea.setDisabledTextColor(Color.BLACK);
 		return textArea;
+	}
+
+	private JScrollPane getScroll() {
+		JScrollPane scroll = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scroll.setBounds(textArea.getBounds());
+		return scroll;
 	}
 
 	private JLabel getStopCriteriaLabel() {
@@ -144,7 +152,7 @@ class MainWindow {
     private JTextField getNumberOfGenerationsTextField(){
         numberOfGenerationsTextField = new JTextField();
         numberOfGenerationsTextField.setBounds(240, 260, 120, 20);
-        numberOfGenerationsTextField.setText("20");
+        numberOfGenerationsTextField.setText("100");
         return numberOfGenerationsTextField;
     }
 
@@ -236,25 +244,25 @@ class MainWindow {
 
 	private void setListenerForBruteForceButton(JButton button) {
 		button.addActionListener(e -> {
+			textArea.setText("");
 			BruteForce bruteForce = new BruteForce(file);
 			List<RoutingSolutionDTO> allAcceptableRoutingSolutions = bruteForce.getAllAcceptableRoutingSolutionsWithCosts();
 
 			RoutingSolutionDTO routingSolutionDDAP = bruteForce.computeDDAP(allAcceptableRoutingSolutions);
-			System.out.println("DDAP RESULT:\n" + routingSolutionDDAP.toString());
-			new FileWriter().writeFile("outputBF", routingSolutionDDAP, bruteForce.getFile());
+			new FileWriter().writeFile("output_BF_DDAP", routingSolutionDDAP, bruteForce.getFile());
 
 			RoutingSolutionDTO routingSolutionDAP = bruteForce.computeDAP(allAcceptableRoutingSolutions);
-			System.out.println("DAP RESULT:\n" + routingSolutionDAP.toString());
+			new FileWriter().writeFile("output_BF_DAP", routingSolutionDAP, bruteForce.getFile());
 		});
 	}
 
 	private void setListenerForEvolutionaryAlgorithmButton(JButton button) {
 		button.addActionListener(e -> {
+			textArea.setText("");
 			Evolutionary evolutionaryAlgorithm = new Evolutionary(file);
 			List<RoutingSolutionDTO> allAcceptableRoutingSolutions = evolutionaryAlgorithm.getAllAcceptableRoutingSolutionsWithCosts(Integer.valueOf(chromosomesNumberTextField.getText()), Long.valueOf(seedTextField.getText()));
 			RoutingSolutionDTO routingSolutionDDAP = evolutionaryAlgorithm.computeDDAP(allAcceptableRoutingSolutions, Integer.valueOf(numberOfGenerationsTextField.getText()));
-			System.out.println("DDAP RESULT:\n" + routingSolutionDDAP.toString());
-			new FileWriter().writeFile("outputEA", routingSolutionDDAP, evolutionaryAlgorithm.getFile());
+			new FileWriter().writeFile("output_EA_DDAP", routingSolutionDDAP, evolutionaryAlgorithm.getFile());
 		});
 	}
 

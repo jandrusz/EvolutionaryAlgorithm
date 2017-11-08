@@ -2,6 +2,7 @@ package com.pstkm.algorithms;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.pstkm.MainWindow;
 import com.pstkm.dtos.FileDTO;
 import com.pstkm.dtos.RoutingSolutionDTO;
 
@@ -36,20 +37,24 @@ public class Evolutionary extends Algorithm {
                 }
                 cost = 0F;
             }
-            System.out.println("DDAP minimum cost: " + finalCost);
+            MainWindow.textArea.append("DDAP minimum cost of " + (generation + 1) + " generation: " + finalCost +"\n");
             bestSolution = allAcceptableRoutingSolutions.get(indexOfBestRoutingSolution);
             indexOfBestRoutingSolution = 0;
             finalCost = Float.MAX_VALUE;
 
             if (generation != 0) {
-                allAcceptableRoutingSolutions = allAcceptableRoutingSolutions.stream()
-                        .sorted(Comparator.comparing(RoutingSolutionDTO::getFinalCost))
-                        .collect(Collectors.toList())
-                        .subList(0, ((int) (allAcceptableRoutingSolutions.size() * 0.97)));
+                allAcceptableRoutingSolutions = getBestSetOfAcceptableRoutingSolutions(allAcceptableRoutingSolutions, 0.97);
             }
             allAcceptableRoutingSolutions = crossover(allAcceptableRoutingSolutions, allAcceptableRoutingSolutions.size());
         }
         return bestSolution;
+    }
+
+    private List<RoutingSolutionDTO> getBestSetOfAcceptableRoutingSolutions(List<RoutingSolutionDTO> routingSolutions, Double percent){
+        return routingSolutions.stream()
+                .sorted(Comparator.comparing(RoutingSolutionDTO::getFinalCost))
+                .collect(Collectors.toList())
+                .subList(0, ((int) (routingSolutions.size() * percent)));
     }
 
     private List<RoutingSolutionDTO> crossover(List<RoutingSolutionDTO> allAcceptableRoutingSolutions, Integer numberOfChromosomes) {
@@ -76,17 +81,18 @@ public class Evolutionary extends Algorithm {
         return children;
     }
 
-    public List<RoutingSolutionDTO> produceOffspring(RoutingSolutionDTO firstParent, RoutingSolutionDTO secondParent, Random random) {
+    private List<RoutingSolutionDTO> produceOffspring(RoutingSolutionDTO firstParent, RoutingSolutionDTO secondParent, Random random) {
         List<RoutingSolutionDTO> children = Lists.newArrayList(new RoutingSolutionDTO(Maps.newHashMap()), new RoutingSolutionDTO(Maps.newHashMap()));
+
 
         for (int i = 0; i < firstParent.getNumberOfChromosomes(); i++) {
             Double rand = (double) random.nextInt(100) / 100;
             if (rand > 0.5) {
-                children.get(0).getMapOfValues().putAll(firstParent.getChromosome(i + 1));
-                children.get(1).getMapOfValues().putAll(secondParent.getChromosome(i + 1));
+                children.get(0).getMapOfValues().putAll(firstParent.getGene(i + 1));
+                children.get(1).getMapOfValues().putAll(secondParent.getGene(i + 1));
             } else {
-                children.get(1).getMapOfValues().putAll(firstParent.getChromosome(i + 1));
-                children.get(0).getMapOfValues().putAll(secondParent.getChromosome(i + 1));
+                children.get(1).getMapOfValues().putAll(firstParent.getGene(i + 1));
+                children.get(0).getMapOfValues().putAll(secondParent.getGene(i + 1));
             }
         }
 

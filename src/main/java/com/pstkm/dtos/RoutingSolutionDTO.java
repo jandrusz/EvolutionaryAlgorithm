@@ -36,10 +36,10 @@ public class RoutingSolutionDTO {
         return result;
     }
 
-    public Map<PointDTO, Integer> getChromosome(Integer chromosomeId) {
+    public Map<PointDTO, Integer> getGene(Integer geneId) {
         Map<PointDTO, Integer> chromosome = Maps.newHashMap();
         for (Map.Entry<PointDTO, Integer> entry : mapOfValues.entrySet()) {
-            if (entry.getKey().getDemandId().equals(chromosomeId)) {
+            if (entry.getKey().getDemandId().equals(geneId)) {
                 chromosome.put(entry.getKey(), entry.getValue());
             }
         }
