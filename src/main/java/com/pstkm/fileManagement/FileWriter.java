@@ -1,14 +1,17 @@
 package com.pstkm.fileManagement;
 
-import com.google.common.collect.Lists;
-import com.pstkm.dtos.*;
-import com.pstkm.util.Utils;
-
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
+import com.google.common.collect.Lists;
+import com.pstkm.dtos.DemandDTO;
+import com.pstkm.dtos.FileDTO;
+import com.pstkm.dtos.PathDTO;
+import com.pstkm.dtos.PointDTO;
+import com.pstkm.dtos.RoutingSolutionDTO;
+import com.pstkm.util.Utils;
 
 public class FileWriter {
 

@@ -10,10 +10,10 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class DemandDTO {
 
-	private Integer demandId;
-	private Integer startNode;
-	private Integer endNode;
-	private Integer demandVolume;
-	private Integer numberOfPaths;
-	private List<PathDTO> paths;
+    private Integer demandId;
+    private Integer startNode;
+    private Integer endNode;
+    private Integer demandVolume;
+    private Integer numberOfPaths;
+    private List<PathDTO> paths;
 }

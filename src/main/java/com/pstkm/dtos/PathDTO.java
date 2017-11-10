@@ -10,7 +10,7 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class PathDTO {
 
-	private Integer demandId;
-	private Integer pathId;
-	private List<Integer> edges;
+    private Integer demandId;
+    private Integer pathId;
+    private List<Integer> edges;
 }

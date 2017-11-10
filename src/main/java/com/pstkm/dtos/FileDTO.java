@@ -10,8 +10,8 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class FileDTO {
 
-	private Integer numberOfLinks;
-	private List<LinkDTO> links;
-	private Integer numberOfDemands;
-	private List<DemandDTO> demands;
+    private Integer numberOfLinks;
+    private List<LinkDTO> links;
+    private Integer numberOfDemands;
+    private List<DemandDTO> demands;
 }

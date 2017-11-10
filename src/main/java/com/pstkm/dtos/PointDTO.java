@@ -11,6 +11,6 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class PointDTO {
 
-	private Integer demandId;
-	private Integer pathId;
+    private Integer demandId;
+    private Integer pathId;
 }

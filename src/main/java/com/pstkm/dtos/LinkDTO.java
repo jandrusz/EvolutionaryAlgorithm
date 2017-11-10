@@ -9,9 +9,9 @@ import lombok.Getter;
 @EqualsAndHashCode
 public class LinkDTO {
 
-	private Integer startNode;
-	private Integer endNode;
-	private Integer numberOfFibrePairsInCable;
-	private Float fibrePairCost;
-	private Integer numberOfLambdasInFibre;
+    private Integer startNode;
+    private Integer endNode;
+    private Integer numberOfFibrePairsInCable;
+    private Float fibrePairCost;
+    private Integer numberOfLambdasInFibre;
 }
