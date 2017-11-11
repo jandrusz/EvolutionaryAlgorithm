@@ -21,6 +21,7 @@ public class RoutingSolutionDTO {
     private Integer numberOfChromosomes;
     private Map<PointDTO, Integer> mapOfValues;
     private List<Integer> costs;
+    private Integer nonZeroSomething;
 
     public RoutingSolutionDTO(Map<PointDTO, Integer> mapOfValues) {
         this.mapOfValues = mapOfValues;
@@ -36,16 +37,16 @@ public class RoutingSolutionDTO {
     }
 
     public Map<PointDTO, Integer> getGene(Integer geneId) {
-        Map<PointDTO, Integer> chromosome = Maps.newHashMap();
+        Map<PointDTO, Integer> gene = Maps.newHashMap();
         for (Map.Entry<PointDTO, Integer> entry : mapOfValues.entrySet()) {
             if (entry.getKey().getDemandId().equals(geneId)) {
-                chromosome.put(entry.getKey(), entry.getValue());
+                gene.put(entry.getKey(), entry.getValue());
             }
         }
-        return chromosome;
+        return gene;
     }
 
-    public Integer getNumberOfChromosomes() {
+    public Integer getNumberOfGenes() {
         return mapOfValues.entrySet().stream()
                 .map(entry -> entry.getKey().getDemandId())
                 .collect(Collectors.toSet())

@@ -19,7 +19,12 @@ public class FileWriter {
 
     public void writeFile(String fileName, RoutingSolutionDTO routingSolutionDTO, FileDTO file) {
         this.file = file;
-        String text = printCostOfOneRoutingSolution(routingSolutionDTO);
+        String text = "";
+        if (routingSolutionDTO == null) {
+            text = "No solution";
+        } else {
+            text = printCostOfOneRoutingSolution(routingSolutionDTO);
+        }
         try (PrintWriter writer = new PrintWriter(fileName + ".txt", "UTF-8")) {
             writer.println(text);
         } catch (FileNotFoundException | UnsupportedEncodingException e) {
