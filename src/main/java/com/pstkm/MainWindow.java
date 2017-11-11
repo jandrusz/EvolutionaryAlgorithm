@@ -381,7 +381,7 @@ public class MainWindow {
 
                 Evolutionary evolutionaryAlgorithm = new Evolutionary(file);
                 List<RoutingSolutionDTO> allAcceptableRoutingSolutions = evolutionaryAlgorithm.getNRandomAcceptableRoutingSolutionsWithCosts(numberOfChromosomes, seed);
-                textArea.append("Initialized start population in " + Stopwatch.getTimeText() + "\n");
+                textArea.append(Stopwatch.getTimeText() + " Initialized start population\n");
 
                 RoutingSolutionDTO routingSolutionDDAP = evolutionaryAlgorithm.computeDDAP(allAcceptableRoutingSolutions, numberOfGenerations, seed, crossoverProbability, mutationProbability, numberOfContinuousNonBetterSolutions, maxTime, maxNumberOfMutations, percentOfBestChromosomes);
                 new FileWriter().writeFile("output_EA_DDAP", routingSolutionDDAP, evolutionaryAlgorithm.getFile());
@@ -408,7 +408,7 @@ public class MainWindow {
 
                 Evolutionary evolutionaryAlgorithm = new Evolutionary(file);
                 List<RoutingSolutionDTO> allAcceptableRoutingSolutions = evolutionaryAlgorithm.getNRandomAcceptableRoutingSolutionsWithCosts(numberOfChromosomes, seed);
-                textArea.append("Initialized start population in " + Stopwatch.getTimeText() + "\n");
+                textArea.append(Stopwatch.getTimeText() + " Initialized start population\n");
                 RoutingSolutionDTO routingSolutionDAP = evolutionaryAlgorithm.computeDAP(allAcceptableRoutingSolutions, numberOfGenerations, seed, crossoverProbability, mutationProbability, maxTime, maxNumberOfMutations, percentOfBestChromosomes);
                 new FileWriter().writeFile("output_EA_DAP", routingSolutionDAP, evolutionaryAlgorithm.getFile());
             }).start();
