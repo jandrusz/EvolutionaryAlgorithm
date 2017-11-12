@@ -161,7 +161,7 @@ public class MainWindow {
     private JTextField getMaxTimeTextField() {
         maxTimeTextField = new JTextField();
         maxTimeTextField.setBounds(240, 240, 120, 20);
-        maxTimeTextField.setText("60");
+        maxTimeTextField.setText("600");
         return maxTimeTextField;
     }
 
@@ -203,7 +203,7 @@ public class MainWindow {
     private JTextField getNumberOfContinuousNonBetterSolutionsTextField() {
         numberOfContinuousNonBetterSolutionsTextField = new JTextField();
         numberOfContinuousNonBetterSolutionsTextField.setBounds(300, 300, 60, 20);
-        numberOfContinuousNonBetterSolutionsTextField.setText("5");
+        numberOfContinuousNonBetterSolutionsTextField.setText("10");
         return numberOfContinuousNonBetterSolutionsTextField;
     }
 
@@ -343,9 +343,9 @@ public class MainWindow {
             new Thread(() -> {
                 textArea.setText("Started brute force DDAP\n");
                 BruteForce bruteForce = new BruteForce(file);
-                List<RoutingSolutionDTO> allAcceptableRoutingSolutions = bruteForce.getAllAcceptableRoutingSolutionsWithCosts();
+                List<RoutingSolutionDTO> allAcceptableRoutingSolutions = bruteForce.getAllAcceptableRoutingSolutionsWithLinksCapacities();
                 RoutingSolutionDTO routingSolutionDDAP = bruteForce.computeDDAP(allAcceptableRoutingSolutions);
-                new FileWriter().writeFile("output_BF_DDAP", routingSolutionDDAP, bruteForce.getFile());
+                new FileWriter().writeFile(path.getFileName().toString().replaceFirst("[.][^.]+$", "") + "_BF_DDAP", routingSolutionDDAP, bruteForce.getFile());
             }).start();
         });
     }
@@ -355,9 +355,9 @@ public class MainWindow {
             new Thread(() -> {
                 textArea.setText("Started brute force DAP\n");
                 BruteForce bruteForce = new BruteForce(file);
-                List<RoutingSolutionDTO> allAcceptableRoutingSolutions = bruteForce.getAllAcceptableRoutingSolutionsWithCosts();
+                List<RoutingSolutionDTO> allAcceptableRoutingSolutions = bruteForce.getAllAcceptableRoutingSolutionsWithLinksCapacities();
                 RoutingSolutionDTO routingSolutionDAP = bruteForce.computeDAP(allAcceptableRoutingSolutions);
-                new FileWriter().writeFile("output_BF_DAP", routingSolutionDAP, bruteForce.getFile());
+                new FileWriter().writeFile(path.getFileName().toString().replaceFirst("[.][^.]+$", "") + "_BF_DAP", routingSolutionDAP, bruteForce.getFile());
             }).start();
         });
     }
@@ -380,11 +380,11 @@ public class MainWindow {
                 Double percentOfBestChromosomes = Double.valueOf(percentOfBestChromosomesToMutationAndCrossover.getText());
 
                 Evolutionary evolutionaryAlgorithm = new Evolutionary(file);
-                List<RoutingSolutionDTO> allAcceptableRoutingSolutions = evolutionaryAlgorithm.getNRandomAcceptableRoutingSolutionsWithCosts(numberOfChromosomes, seed);
+                List<RoutingSolutionDTO> allAcceptableRoutingSolutions = evolutionaryAlgorithm.getNRandomAcceptableRoutingSolutionsWithLinksCapacities(numberOfChromosomes, seed);
                 textArea.append(Stopwatch.getTimeText() + " Initialized start population\n");
 
                 RoutingSolutionDTO routingSolutionDDAP = evolutionaryAlgorithm.computeDDAP(allAcceptableRoutingSolutions, numberOfGenerations, seed, crossoverProbability, mutationProbability, numberOfContinuousNonBetterSolutions, maxTime, maxNumberOfMutations, percentOfBestChromosomes);
-                new FileWriter().writeFile("output_EA_DDAP", routingSolutionDDAP, evolutionaryAlgorithm.getFile());
+                new FileWriter().writeFile(path.getFileName().toString().replaceFirst("[.][^.]+$", "") + "_EA_DDAP", routingSolutionDDAP, evolutionaryAlgorithm.getFile());
 
             }).start();
         });
@@ -407,10 +407,10 @@ public class MainWindow {
                 Double percentOfBestChromosomes = Double.valueOf(percentOfBestChromosomesToMutationAndCrossover.getText());
 
                 Evolutionary evolutionaryAlgorithm = new Evolutionary(file);
-                List<RoutingSolutionDTO> allAcceptableRoutingSolutions = evolutionaryAlgorithm.getNRandomAcceptableRoutingSolutionsWithCosts(numberOfChromosomes, seed);
+                List<RoutingSolutionDTO> allAcceptableRoutingSolutions = evolutionaryAlgorithm.getNRandomAcceptableRoutingSolutionsWithLinksCapacities(numberOfChromosomes, seed);
                 textArea.append(Stopwatch.getTimeText() + " Initialized start population\n");
                 RoutingSolutionDTO routingSolutionDAP = evolutionaryAlgorithm.computeDAP(allAcceptableRoutingSolutions, numberOfGenerations, seed, crossoverProbability, mutationProbability, maxTime, maxNumberOfMutations, percentOfBestChromosomes);
-                new FileWriter().writeFile("output_EA_DAP", routingSolutionDAP, evolutionaryAlgorithm.getFile());
+                new FileWriter().writeFile(path.getFileName().toString().replaceFirst("[.][^.]+$", "") + "_EA_DAP", routingSolutionDAP, evolutionaryAlgorithm.getFile());
             }).start();
         });
     }

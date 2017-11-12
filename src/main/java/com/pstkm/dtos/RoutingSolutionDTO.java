@@ -18,10 +18,9 @@ import com.google.common.collect.Maps;
 public class RoutingSolutionDTO {
 
     private Float finalCost;
-    private Integer numberOfChromosomes;
     private Map<PointDTO, Integer> mapOfValues;
-    private List<Integer> costs;
-    private Integer nonZeroSomething;
+    private List<Integer> linksCapacities;
+    private Integer linksWIthExceededCapacity;
 
     public RoutingSolutionDTO(Map<PointDTO, Integer> mapOfValues) {
         this.mapOfValues = mapOfValues;

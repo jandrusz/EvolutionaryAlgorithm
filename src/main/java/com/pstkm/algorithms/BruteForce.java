@@ -24,7 +24,7 @@ public class BruteForce extends Algorithm {
         Integer indexOfBestRoutingSolution = 0;
 
         for (int i = 0; i < allAcceptableRoutingSolutions.size(); i++) {
-            List<Integer> costsOfLinks = allAcceptableRoutingSolutions.get(i).getCosts();
+            List<Integer> costsOfLinks = allAcceptableRoutingSolutions.get(i).getLinksCapacities();
             for (int j = 0; j < costsOfLinks.size(); j++) {
                 cost += file.getLinks().get(j).getFibrePairCost() * costsOfLinks.get(j);
             }
@@ -39,14 +39,15 @@ public class BruteForce extends Algorithm {
     }
 
     public RoutingSolutionDTO computeDAP(List<RoutingSolutionDTO> allAcceptableRoutingSolutions) {
-        for (int i = 0; i < allAcceptableRoutingSolutions.size(); i++) {
+        for (RoutingSolutionDTO routingSolution : allAcceptableRoutingSolutions) {
             List<Integer> maxValues = Lists.newArrayList();
-            for (int j = 0; j < allAcceptableRoutingSolutions.get(i).getCosts().size(); j++) {
-                maxValues.add(Math.max(0, allAcceptableRoutingSolutions.get(i).getCosts().get(j) - file.getLinks().get(j).getNumberOfFibrePairsInCable()));
+            for (int j = 0; j < routingSolution.getLinksCapacities().size(); j++) {
+                maxValues.add(Math.max(0, routingSolution.getLinksCapacities().get(j) - file.getLinks().get(j).getNumberOfFibrePairsInCable()));
             }
-            allAcceptableRoutingSolutions.get(i).setNonZeroSomething(maxValues.stream().filter(p -> p > 0).collect(Collectors.toList()).size());
+            routingSolution.setLinksWIthExceededCapacity(maxValues.stream().filter(p -> p > 0).collect(Collectors.toList()).size());
             if (Collections.max(maxValues) == 0) {
-                return allAcceptableRoutingSolutions.get(i);
+                MainWindow.textArea.append("Solution found and saved.");
+                return routingSolution;
             }
         }
         return null;

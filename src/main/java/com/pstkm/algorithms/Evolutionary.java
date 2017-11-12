@@ -24,18 +24,17 @@ public class Evolutionary extends Algorithm {
         setFile(fileDTO);
     }
 
-    public RoutingSolutionDTO computeDDAP(List<RoutingSolutionDTO> allAcceptableRoutingSolutions, Integer numberOfGenerations, Long seed, Double probabilityOfCrossover, Double probabilityOfMutation, Integer numberOfSolutions, Double maxTime, Integer maxNumberOfMutations, Double percentOfBestChromosomes) {
+    public RoutingSolutionDTO computeDDAP(List<RoutingSolutionDTO> allAcceptableRoutingSolutions, Integer numberOfGenerations, Long seed, Double probabilityOfCrossover, Double probabilityOfMutation, Integer numberOfIterations, Double maxTime, Integer maxNumberOfMutations, Double percentOfBestChromosomes) {
         Float finalCost = Float.MAX_VALUE;
         Float cost = 0F;
         Integer indexOfBestRoutingSolution = 0;
         List<RoutingSolutionDTO> bestSolutions = Lists.newArrayList();
-        RoutingSolutionDTO bestSolution;
         numberOfMutations = 0;
 
         for (int generation = 0; generation < numberOfGenerations; generation++) {
             for (int indexOfRoutingSolution = 0; indexOfRoutingSolution < allAcceptableRoutingSolutions.size(); indexOfRoutingSolution++) {
-                List<Integer> costsOfLinks = allAcceptableRoutingSolutions.get(indexOfRoutingSolution).getCosts();
-                for (int j = 0; j < allAcceptableRoutingSolutions.get(indexOfRoutingSolution).getCosts().size(); j++) {
+                List<Integer> costsOfLinks = allAcceptableRoutingSolutions.get(indexOfRoutingSolution).getLinksCapacities();
+                for (int j = 0; j < allAcceptableRoutingSolutions.get(indexOfRoutingSolution).getLinksCapacities().size(); j++) {
                     cost += file.getLinks().get(j).getFibrePairCost() * costsOfLinks.get(j);
                 }
                 allAcceptableRoutingSolutions.get(indexOfRoutingSolution).setFinalCost(cost);
@@ -50,26 +49,27 @@ public class Evolutionary extends Algorithm {
                 MainWindow.textArea.append("Exceeded maximum number of mutations.");
                 break;
             }
+
             if (Stopwatch.getTime() >= maxTime) {
                 MainWindow.textArea.append("Exceeded maximum time.");
                 break;
             }
 
             MainWindow.textArea.append(Stopwatch.getTimeText() + " Minimum cost of " + (generation + 1) + " generation: " + finalCost + "\n");
-            bestSolution = allAcceptableRoutingSolutions.get(indexOfBestRoutingSolution);
-            bestSolutions.add(bestSolution);
-            if (checkIfLastNSolutionsWasWorseOrEqual(bestSolutions, numberOfSolutions)) {
+            bestSolutions.add(allAcceptableRoutingSolutions.get(indexOfBestRoutingSolution));
+
+            if (checkIfLastNSolutionsWasWorseOrEqual(bestSolutions, numberOfIterations)) {
+                MainWindow.textArea.append("Did not find better solution in " + numberOfIterations + " iterations");
                 break;
             }
+
             indexOfBestRoutingSolution = 0;
             finalCost = Float.MAX_VALUE;
 
-            if (generation != 0) {
-                allAcceptableRoutingSolutions = getBestSetOfAcceptableRoutingSolutionsForDDAP(allAcceptableRoutingSolutions, percentOfBestChromosomes);
-            }
+            allAcceptableRoutingSolutions = getBestSetOfAcceptableRoutingSolutionsForDDAP(allAcceptableRoutingSolutions, percentOfBestChromosomes);
             allAcceptableRoutingSolutions = crossover(allAcceptableRoutingSolutions, allAcceptableRoutingSolutions.size(), seed, probabilityOfCrossover);
             allAcceptableRoutingSolutions = mutation(allAcceptableRoutingSolutions, allAcceptableRoutingSolutions.size(), seed, probabilityOfMutation);
-            allAcceptableRoutingSolutions = addCostsToRoutingSolutions(allAcceptableRoutingSolutions);
+            allAcceptableRoutingSolutions = addLinksCapacitiesToRoutingSolutions(allAcceptableRoutingSolutions);
 
         }
         return getBestSolution(bestSolutions);
@@ -123,10 +123,10 @@ public class Evolutionary extends Algorithm {
         return children;
     }
 
-    private List<RoutingSolutionDTO> addCostsToRoutingSolutions(List<RoutingSolutionDTO> solutions) {
-        List<List<Integer>> costs = computeCostsOfAllRoutingSolutions(solutions);
+    private List<RoutingSolutionDTO> addLinksCapacitiesToRoutingSolutions(List<RoutingSolutionDTO> solutions) {
+        List<List<Integer>> linksCapacities = computeLinksCapacitiesOfAllRoutingSolutions(solutions);
         for (int i = 0; i < solutions.size(); i++) {
-            solutions.get(i).setCosts(costs.get(i));
+            solutions.get(i).setLinksCapacities(linksCapacities.get(i));
         }
         return solutions;
     }
@@ -150,7 +150,6 @@ public class Evolutionary extends Algorithm {
     }
 
     private Map<PointDTO, Integer> mutateGene(Map<PointDTO, Integer> gene, Long seed) {
-
         Map<PointDTO, Integer> mutatedGene = Maps.newHashMap();
         List<PointDTO> points = Lists.newArrayList();
         List<Integer> values = Lists.newArrayList();
@@ -201,14 +200,16 @@ public class Evolutionary extends Algorithm {
     public RoutingSolutionDTO computeDAP(List<RoutingSolutionDTO> allAcceptableRoutingSolutions, Integer numberOfGenerations, Long seed, Double probabilityOfCrossover, Double probabilityOfMutation, Double maxTime, Integer maxNumberOfMutations, Double percentOfBestChromosomes) {
         numberOfMutations = 0;
         for (int generation = 0; generation < numberOfGenerations; generation++) {
-            for (int i = 0; i < allAcceptableRoutingSolutions.size(); i++) {
+            for (RoutingSolutionDTO routingSolution : allAcceptableRoutingSolutions) {
                 List<Integer> maxValues = Lists.newArrayList();
-                for (int j = 0; j < allAcceptableRoutingSolutions.get(i).getCosts().size(); j++) {
-                    maxValues.add(Math.max(0, allAcceptableRoutingSolutions.get(i).getCosts().get(j) - file.getLinks().get(j).getNumberOfFibrePairsInCable()));
+                for (int j = 0; j < routingSolution.getLinksCapacities().size(); j++) {
+                    maxValues.add(Math.max(0, routingSolution.getLinksCapacities().get(j) - file.getLinks().get(j).getNumberOfFibrePairsInCable()));
                 }
-                allAcceptableRoutingSolutions.get(i).setNonZeroSomething(maxValues.stream().filter(p -> p > 0).collect(Collectors.toList()).size());
+                routingSolution.setLinksWIthExceededCapacity(maxValues.stream().filter(p -> p > 0).collect(Collectors.toList()).size());
                 if (Collections.max(maxValues) == 0) {
-                    return allAcceptableRoutingSolutions.get(i);
+                    MainWindow.textArea.append(Stopwatch.getTimeText() + " Number of links with exceed capacity in " + (generation + 1) + " generation: " + routingSolution.getLinksWIthExceededCapacity() + "\n");
+                    MainWindow.textArea.append("Solution found and saved.");
+                    return routingSolution;
                 }
             }
 
@@ -221,12 +222,11 @@ public class Evolutionary extends Algorithm {
                 break;
             }
 
-            if (generation != 0) {
-                allAcceptableRoutingSolutions = getBestSetOfAcceptableRoutingSolutionsForDAP(allAcceptableRoutingSolutions, percentOfBestChromosomes);
-            }
+            allAcceptableRoutingSolutions = getBestSetOfAcceptableRoutingSolutionsForDAP(allAcceptableRoutingSolutions, percentOfBestChromosomes);
+            MainWindow.textArea.append(Stopwatch.getTimeText() + " Number of links with exceed capacity in " + (generation + 1) + " generation: " + allAcceptableRoutingSolutions.get(0).getLinksWIthExceededCapacity() + "\n");
             allAcceptableRoutingSolutions = crossover(allAcceptableRoutingSolutions, allAcceptableRoutingSolutions.size(), seed, probabilityOfCrossover);
             allAcceptableRoutingSolutions = mutation(allAcceptableRoutingSolutions, allAcceptableRoutingSolutions.size(), seed, probabilityOfMutation);
-            allAcceptableRoutingSolutions = addCostsToRoutingSolutions(allAcceptableRoutingSolutions);
+            allAcceptableRoutingSolutions = addLinksCapacitiesToRoutingSolutions(allAcceptableRoutingSolutions);
         }
         return null;
     }
@@ -234,7 +234,7 @@ public class Evolutionary extends Algorithm {
     private List<RoutingSolutionDTO> getBestSetOfAcceptableRoutingSolutionsForDAP(List<RoutingSolutionDTO> routingSolutions, Double percent) {
         Integer size = routingSolutions.size();
         List<RoutingSolutionDTO> list = routingSolutions.stream()
-                .sorted(Comparator.comparing(RoutingSolutionDTO::getNonZeroSomething))
+                .sorted(Comparator.comparing(RoutingSolutionDTO::getLinksWIthExceededCapacity))
                 .collect(Collectors.toList())
                 .subList(0, ((int) (routingSolutions.size() * (percent / 100.0))));
 

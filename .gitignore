@@ -1,7 +1,11 @@
 .idea
 target
 EvolutionaryAlgorithm.iml
-output_BF_DDAP.txt
-output_BF_DAP.txt
-output_EA_DDAP.txt
-output_EA_DAP.txt
+net4_BF_DDAP.txt
+net4_BF_DAP.txt
+net4_EA_DDAP.txt
+net4_EA_DAP.txt
+net12_1_BF_DDAP.txt
+net12_1_BF_DAP.txt
+net12_1_EA_DDAP.txt
+net12_1_EA_DAP.txt

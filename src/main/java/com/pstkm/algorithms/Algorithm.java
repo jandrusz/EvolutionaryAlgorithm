@@ -110,37 +110,37 @@ public class Algorithm {
         return routingSolutionDTO;
     }
 
-    public List<RoutingSolutionDTO> getAllAcceptableRoutingSolutionsWithCosts() {
+    public List<RoutingSolutionDTO> getAllAcceptableRoutingSolutionsWithLinksCapacities() {
         List<RoutingSolutionDTO> allAcceptableRoutingSolutions = getAllAcceptableRoutingSolutions();
-        List<List<Integer>> costs = computeCostsOfAllRoutingSolutions(allAcceptableRoutingSolutions);
+        List<List<Integer>> linksCapacities = computeLinksCapacitiesOfAllRoutingSolutions(allAcceptableRoutingSolutions);
         for (int i = 0; i < allAcceptableRoutingSolutions.size(); i++) {
-            allAcceptableRoutingSolutions.get(i).setCosts(costs.get(i));
+            allAcceptableRoutingSolutions.get(i).setLinksCapacities(linksCapacities.get(i));
         }
         return allAcceptableRoutingSolutions;
     }
 
-    public List<RoutingSolutionDTO> getNRandomAcceptableRoutingSolutionsWithCosts(Integer numberOfChromosomes, Long seed) {
+    public List<RoutingSolutionDTO> getNRandomAcceptableRoutingSolutionsWithLinksCapacities(Integer numberOfChromosomes, Long seed) {
         List<RoutingSolutionDTO> allAcceptableRoutingSolutions = getRandomAcceptableRoutingSolutions(numberOfChromosomes, seed);
-        List<List<Integer>> costs = computeCostsOfAllRoutingSolutions(allAcceptableRoutingSolutions);
+        List<List<Integer>> linksCapacities = computeLinksCapacitiesOfAllRoutingSolutions(allAcceptableRoutingSolutions);
         Random random = new Random(seed);
         List<RoutingSolutionDTO> list = Lists.newArrayList();
 
         for (int i = 0; i < numberOfChromosomes; i++) {
             Integer rand = random.nextInt(allAcceptableRoutingSolutions.size());
-            allAcceptableRoutingSolutions.get(rand).setCosts(costs.get(rand));
+            allAcceptableRoutingSolutions.get(rand).setLinksCapacities(linksCapacities.get(rand));
             list.add(allAcceptableRoutingSolutions.get(rand));
         }
         return list;
     }
 
-    public List<List<Integer>> computeCostsOfAllRoutingSolutions(List<RoutingSolutionDTO> listOfRoutingSolutions) {
+    public List<List<Integer>> computeLinksCapacitiesOfAllRoutingSolutions(List<RoutingSolutionDTO> listOfRoutingSolutions) {
         return listOfRoutingSolutions.stream()
-                .map(this::computeCostOfOneRoutingSolution)
+                .map(this::computeLinksCapacitiesOfOneRoutingSolution)
                 .collect(Collectors.toList());
     }
 
-    private List<Integer> computeCostOfOneRoutingSolution(RoutingSolutionDTO routingSolutionDTO) {
-        List<Integer> cost = Utils.prepareEmptyListWithNZeroElements(file.getLinks().size());
+    private List<Integer> computeLinksCapacitiesOfOneRoutingSolution(RoutingSolutionDTO routingSolutionDTO) {
+        List<Integer> linksCapacities = Utils.prepareEmptyListWithNZeroElements(file.getLinks().size());
 
         List<PathDTO> paths = Lists.newArrayList();
         for (DemandDTO demand : file.getDemands()) {
@@ -154,9 +154,9 @@ public class Algorithm {
                     sum += routingSolutionDTO.getMapOfValues().get(new PointDTO(path.getDemandId(), path.getPathId()));
                 }
             }
-            cost.set(j, (int) Math.ceil(sum / (double) file.getLinks().get(j).getNumberOfLambdasInFibre()));
+            linksCapacities.set(j, (int) Math.ceil(sum / (double) file.getLinks().get(j).getNumberOfLambdasInFibre()));
         }
-        return cost;
+        return linksCapacities;
     }
 
 }
