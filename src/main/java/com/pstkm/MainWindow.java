@@ -345,7 +345,7 @@ public class MainWindow {
                 BruteForce bruteForce = new BruteForce(file);
                 List<RoutingSolutionDTO> allAcceptableRoutingSolutions = bruteForce.getAllAcceptableRoutingSolutionsWithLinksCapacities();
                 RoutingSolutionDTO routingSolutionDDAP = bruteForce.computeDDAP(allAcceptableRoutingSolutions);
-                new FileWriter().writeFile(path.getFileName().toString().replaceFirst("[.][^.]+$", "") + "_BF_DDAP", routingSolutionDDAP, bruteForce.getFile());
+                new FileWriter().writeFile(addSuffixToFileName("_BF_DDAP"), routingSolutionDDAP, bruteForce.getFile());
             }).start();
         });
     }
@@ -357,7 +357,7 @@ public class MainWindow {
                 BruteForce bruteForce = new BruteForce(file);
                 List<RoutingSolutionDTO> allAcceptableRoutingSolutions = bruteForce.getAllAcceptableRoutingSolutionsWithLinksCapacities();
                 RoutingSolutionDTO routingSolutionDAP = bruteForce.computeDAP(allAcceptableRoutingSolutions);
-                new FileWriter().writeFile(path.getFileName().toString().replaceFirst("[.][^.]+$", "") + "_BF_DAP", routingSolutionDAP, bruteForce.getFile());
+                new FileWriter().writeFile(addSuffixToFileName("_BF_DAP"), routingSolutionDAP, bruteForce.getFile());
             }).start();
         });
     }
@@ -384,7 +384,7 @@ public class MainWindow {
                 textArea.append(Stopwatch.getTimeText() + " Initialized start population\n");
 
                 RoutingSolutionDTO routingSolutionDDAP = evolutionaryAlgorithm.computeDDAP(allAcceptableRoutingSolutions, numberOfGenerations, seed, crossoverProbability, mutationProbability, numberOfContinuousNonBetterSolutions, maxTime, maxNumberOfMutations, percentOfBestChromosomes);
-                new FileWriter().writeFile(path.getFileName().toString().replaceFirst("[.][^.]+$", "") + "_EA_DDAP", routingSolutionDDAP, evolutionaryAlgorithm.getFile());
+                new FileWriter().writeFile(addSuffixToFileName("_EA_DDAP"), routingSolutionDDAP, evolutionaryAlgorithm.getFile());
 
             }).start();
         });
@@ -410,8 +410,12 @@ public class MainWindow {
                 List<RoutingSolutionDTO> allAcceptableRoutingSolutions = evolutionaryAlgorithm.getNRandomAcceptableRoutingSolutionsWithLinksCapacities(numberOfChromosomes, seed);
                 textArea.append(Stopwatch.getTimeText() + " Initialized start population\n");
                 RoutingSolutionDTO routingSolutionDAP = evolutionaryAlgorithm.computeDAP(allAcceptableRoutingSolutions, numberOfGenerations, seed, crossoverProbability, mutationProbability, maxTime, maxNumberOfMutations, percentOfBestChromosomes);
-                new FileWriter().writeFile(path.getFileName().toString().replaceFirst("[.][^.]+$", "") + "_EA_DAP", routingSolutionDAP, evolutionaryAlgorithm.getFile());
+                new FileWriter().writeFile(addSuffixToFileName("_EA_DAP"), routingSolutionDAP, evolutionaryAlgorithm.getFile());
             }).start();
         });
+    }
+
+    private String addSuffixToFileName(String suffix) {
+        return path.getFileName().toString().replaceFirst("[.][^.]+$", "") + suffix;
     }
 }

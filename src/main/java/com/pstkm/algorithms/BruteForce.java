@@ -34,7 +34,8 @@ public class BruteForce extends Algorithm {
             }
             cost = 0F;
         }
-        MainWindow.textArea.append("DDAP minimum cost: " + finalCost);
+        MainWindow.textArea.append("DDAP minimum cost: " + finalCost + "\n");
+        MainWindow.textArea.append("Solution saved.");
         return allAcceptableRoutingSolutions.get(indexOfBestRoutingSolution);
     }
 

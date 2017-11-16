@@ -45,13 +45,7 @@ public class Evolutionary extends Algorithm {
                 cost = 0F;
             }
 
-            if (numberOfMutations >= maxNumberOfMutations) {
-                MainWindow.textArea.append("Exceeded maximum number of mutations.");
-                break;
-            }
-
-            if (Stopwatch.getTime() >= maxTime) {
-                MainWindow.textArea.append("Exceeded maximum time.");
+            if (shouldStop(maxNumberOfMutations, maxTime)) {
                 break;
             }
 
@@ -72,7 +66,21 @@ public class Evolutionary extends Algorithm {
             allAcceptableRoutingSolutions = addLinksCapacitiesToRoutingSolutions(allAcceptableRoutingSolutions);
 
         }
+        MainWindow.textArea.append("\nBest solution saved.");
         return getBestSolution(bestSolutions);
+    }
+
+    private Boolean shouldStop(Integer maxNumberOfMutations, Double maxTime) {
+        if (numberOfMutations >= maxNumberOfMutations) {
+            MainWindow.textArea.append("Exceeded maximum number of mutations.");
+            return true;
+        }
+
+        if (Stopwatch.getTime() >= maxTime) {
+            MainWindow.textArea.append("Exceeded maximum time.");
+            return true;
+        }
+        return false;
     }
 
     private List<RoutingSolutionDTO> getBestSetOfAcceptableRoutingSolutionsForDDAP(List<RoutingSolutionDTO> routingSolutions, Double percent) {
@@ -207,7 +215,7 @@ public class Evolutionary extends Algorithm {
                 }
                 routingSolution.setLinksWIthExceededCapacity(maxValues.stream().filter(p -> p > 0).collect(Collectors.toList()).size());
                 if (Collections.max(maxValues) == 0) {
-                    MainWindow.textArea.append(Stopwatch.getTimeText() + " Number of links with exceed capacity in " + (generation + 1) + " generation: " + routingSolution.getLinksWIthExceededCapacity() + "\n");
+                    MainWindow.textArea.append(Stopwatch.getTimeText() + " Number of links with exceeded capacity in " + (generation + 1) + " generation: " + routingSolution.getLinksWIthExceededCapacity() + "\n");
                     MainWindow.textArea.append("Solution found and saved.");
                     return routingSolution;
                 }
@@ -223,11 +231,12 @@ public class Evolutionary extends Algorithm {
             }
 
             allAcceptableRoutingSolutions = getBestSetOfAcceptableRoutingSolutionsForDAP(allAcceptableRoutingSolutions, percentOfBestChromosomes);
-            MainWindow.textArea.append(Stopwatch.getTimeText() + " Number of links with exceed capacity in " + (generation + 1) + " generation: " + allAcceptableRoutingSolutions.get(0).getLinksWIthExceededCapacity() + "\n");
+            MainWindow.textArea.append(Stopwatch.getTimeText() + " Number of links with exceeded capacity in " + (generation + 1) + " generation: " + allAcceptableRoutingSolutions.get(0).getLinksWIthExceededCapacity() + "\n");
             allAcceptableRoutingSolutions = crossover(allAcceptableRoutingSolutions, allAcceptableRoutingSolutions.size(), seed, probabilityOfCrossover);
             allAcceptableRoutingSolutions = mutation(allAcceptableRoutingSolutions, allAcceptableRoutingSolutions.size(), seed, probabilityOfMutation);
             allAcceptableRoutingSolutions = addLinksCapacitiesToRoutingSolutions(allAcceptableRoutingSolutions);
         }
+        MainWindow.textArea.append("Solution not found.");
         return null;
     }
 
